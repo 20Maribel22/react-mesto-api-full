@@ -1,4 +1,4 @@
-export const BASE_URL = '';
+export const BASE_URL = 'http://api.mesto.maribel.nomoredomains.club';
 //export const BASE_URL = "http://localhost:3000";
 
 function handleResponse(res) {
