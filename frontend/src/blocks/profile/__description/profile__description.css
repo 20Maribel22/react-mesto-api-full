@@ -1,0 +1,11 @@
+.profile__description {
+ flex: 1 1 auto;
+ margin: 0;
+ padding: 0;
+}
+
+@media (max-width: 425px) {
+  .profile__description{
+   text-align: center;
+  }
+}
