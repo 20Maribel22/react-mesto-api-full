@@ -15,7 +15,7 @@ class Api {
   getInitialCards() {
     return fetch(`${this._baseUrl}/cards`, {
       method: "GET",
-      headers: this._headers,
+      headers: this.getHeaders(),
     }).then((res) => this._handleResponse(res));
   }
 
@@ -23,7 +23,7 @@ class Api {
   setNewCard({ name, link }) {
     return fetch(`${this._baseUrl}/cards`, {
       method: "POST",
-      headers: this._headers,
+      headers: this.getHeaders(),
       body: JSON.stringify({
         name: name,
         link: link 
@@ -35,7 +35,7 @@ class Api {
   deleteCard(cardId) {
     return fetch(`${this._baseUrl}/cards/${cardId}`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: this.getHeaders(),
     }).then((res) => this._handleResponse(res));
   }
 
@@ -43,7 +43,7 @@ class Api {
   changeLikeCardStatus(cardId, isLiked) {
     return fetch(`${this._baseUrl}/cards/${cardId}/likes`, {
       method: !isLiked ? "DELETE" : "PUT",
-      headers: this._headers,
+      headers: this.getHeaders(),
     }).then((res) => this._handleResponse(res));
   }
 
@@ -52,7 +52,7 @@ class Api {
   getUserInfo() {
    return fetch(`${this._baseUrl}/users/me`, {
      method: "GET",
-     headers: this._headers,
+     headers: this.getHeaders(),
     }).then((res) => this._handleResponse(res));
  }
 
@@ -60,7 +60,7 @@ class Api {
   setUserInfo({ name, about }) {
     return fetch(`${this._baseUrl}/users/me`, {
        method: "PATCH",
-       headers: this._headers,
+       headers: this.getHeaders(),
        body: JSON.stringify({ 
         name: name, 
         about: about
@@ -72,11 +72,19 @@ class Api {
    setProfileAvatar({ avatar }) {
     return fetch(`${this._baseUrl}/users/me/avatar`, {
       method: "PATCH",
-      headers: this._headers,
+      headers: this.getHeaders(),
       body: JSON.stringify({ 
         avatar: avatar
       }),
     }).then((res) => this._handleResponse(res));
+  }
+
+  getHeaders() {
+    const token = localStorage.getItem('jwt');
+    return {
+      ...this._headers,
+      'Authorization': `Bearer ${token}`,
+    }
   }
 
 }
@@ -86,6 +94,6 @@ export const api = new Api({
 
   baseUrl: 'http://api.mesto.maribel.nomoredomains.club',
   headers: {
-     "Content-Type": "application/json",
-  },
+    'Content-Type': 'application/json'
+  }
 });
