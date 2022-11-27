@@ -45,17 +45,23 @@ function App() {
   }, [loggedIn]);
 
   useEffect(() => {
-    auth
-      .getContent()
-      .then((data) => {
-        setUserEmail(data.email);
-        setLoggedIn(true);
-        history.push("/");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, [history]);
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) {
+      auth
+        .getContent(jwt)
+        .then((res) => {
+          if (res) {
+            setUserEmail(res.data.email);
+            setLoggedIn(true);
+            history.push("/");
+          }
+        })
+        .catch((err) => {
+          setLoggedIn(false);
+          console.log(err);
+        });
+    }
+  }, [history, loggedIn]);
 
   function handleUpdateUser(data) {
     api
@@ -95,24 +101,25 @@ function App() {
 
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
-    const isLiked = card.likes.some((i) => i === currentUser._id);
+    const isLiked = card.likes.some((i) => i._id === currentUser._id);
 
     // Отправляем запрос в API и получаем обновлённые данные карточки
     api
-      .changeLikeCardStatus(card._id, !isLiked)
-      .then((res) => {
-        setCards((state) =>
-          state.map((c) => (c._id === card._id ? res.data : c))
-        );
-      })
-      .catch((err) => console.log(err));
+    .changeLikeCardStatus(card._id, !isLiked)
+    .then((newCard) => {
+      setCards((state) =>
+        state.map((c) => (c._id === card._id ? newCard : c))
+      );
+    })
+    .catch((err) => console.log(err));
   }
 
   function handleCardDelete(card) {
     api
       .deleteCard(card._id)
-      .then(() => {
-        setCards((state) => state.filter((c) => c._id !== card._id))
+      .then((res) => {
+        const newCard = cards.filter((item) => item._id !== card._id);
+        setCards(newCard);
       })
       .catch((err) => console.log(err));
   }
@@ -163,18 +170,19 @@ function App() {
     auth
       .authorize(email, password)
       .then((data) => {
+        if (data.token) {
           setUserEmail(data.email);
           setLoggedIn(true);
           history.push("/");
+        }
       })
       .catch((err) => {
-        setStatus(false);
-        setIsInfoTooltipPopupOpen(true);
-        console.log(err);
+       console.log(err);
       });
   }
 
   function handleLogout() {
+    localStorage.removeItem("jwt");
     setLoggedIn(false);
     setUserEmail("");
     history.push("/sign-in");

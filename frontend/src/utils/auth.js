@@ -27,7 +27,13 @@ export const authorize = (email, password) => {
     },
     body: JSON.stringify({ email, password }),
   })
-    .then((res) => handleResponse(res));  
+    .then((res) => handleResponse(res))
+    .then((data) => {
+      if (data.token) {
+        localStorage.setItem("jwt", data.token);
+        return data;
+      }
+    });
 };
 
 export const getContent = (token) => {
