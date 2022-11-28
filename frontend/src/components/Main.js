@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import { useContext } from "react";
 import Card from "./Card";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
@@ -9,7 +10,7 @@ function Main(props) {
   return (
     <main className="content">
       <section className="profile">
-        <div className="profile__avatar">
+      <div className="profile__avatar">
           <img
             className="profile__image"
             style={{ backgroundImage: `url(${currentUser.avatar})` }}
